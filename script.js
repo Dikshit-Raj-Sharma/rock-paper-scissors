@@ -1,4 +1,3 @@
-console.log("Welcome To My Rock Paper Scissors Game")
 
 let userScore = 0;
 let computerScore = 0;
@@ -9,42 +8,87 @@ function getComputerChoice() {
     else return "scissors";
 }
 
-function getUserChoice() {
-    return prompt("Enter your choice: rock, paper or scissors");
-}
-
 function playRound() {
-    const userChoice = getUserChoice().toLowerCase();
     const computerChoice = getComputerChoice();
     if (userChoice == computerChoice) {
-        console.log("Round end in a draw");
+        return "Draw";
     }
     else if (userChoice == "rock" && computerChoice == "paper") {
-        console.log("You Lost in this round.")
-        computerScore++;
+        return "You Lose";
     }
     else if (userChoice == "paper" && computerChoice == "scissors") {
-        console.log("You Lost in this round.")
-        computerScore++;
+        return "You Lose";
     }
     else if (userChoice == "scissors" && computerChoice == "rock") {
-        console.log("You Lost in this round.")
-        computerScore++;
+        return "You Lose";
     }
     else {
-        console.log("You Won in this round!")
-        userScore++;
+        return "You Win";
     }
-    console.log(`Your Score : ${userScore} and Computer Score : ${computerScore}`)
 }
 
-function playGame() {
-    userScore=0;
-    computerScore=0;
-    for (let i = 0; i < 5; i++) {
-        playRound();
+let userChoice;
+let roundResult = document.querySelector("#roundResult");
+let score = document.querySelector("#score");
+let winner = document.querySelector("#winner");
+let restart = document.querySelector("#restart");
+
+function handleClick(playerChoice) {
+    userChoice = playerChoice;
+    if (userScore >= 5 || computerScore >= 5) return;
+
+    const result = playRound();
+
+    if (result.includes("You Win")) {
+        userScore++;
+        roundResult.textContent = "You win this round";
+        score.textContent = `Your Score: ${userScore} | Computer Score: ${computerScore}`;
+
     }
-    if (userScore > computerScore) console.log("You Won the game!");
-    else if (userScore < computerScore) console.log("You Lost the game");
-    else console.log("Game ends in a Draw");
+    else if (result.includes("You Lose")) {
+        computerScore++;
+        roundResult.textContent = "You Lost this round";
+        score.textContent = `Your Score: ${userScore} | Computer Score: ${computerScore}`;
+    }
+    else {
+        roundResult.textContent = "Round ends in a Draw";
+        score.textContent = `Your Score: ${userScore} | Computer Score: ${computerScore}`;
+    }
+
+    if (userScore == 5 || computerScore == 5) {
+        if (userScore > computerScore) {
+            winner.textContent = "You Won the game!";
+        } else if (computerScore > userScore) {
+            winner.textContent = "You Lost the game!";
+        } else {
+            winner.textContent = "Game ends in a Draw.";
+        }
+        restart.style.display="inline-block";
+
+        document.querySelectorAll('.choices button').forEach(btn => {
+            btn.disabled = true;
+        });
+    }
 }
+
+let btn = document.querySelector(".choices");
+    
+btn.addEventListener('click', (event) => {
+    if (event.target.tagName === 'BUTTON') {
+        const playerChoice = event.target.id;
+        handleClick(playerChoice);
+    }
+})
+restart.addEventListener("click", () => {
+    userScore = 0;
+    computerScore = 0;
+    roundResult.textContent = "";
+    score.textContent = `Player: 0 | Computer: 0`;
+    winner.textContent = '';
+
+    document.querySelectorAll('.choices button').forEach(btn => {
+        btn.disabled = false;
+    });
+
+    restart.style.display = "none";
+})
